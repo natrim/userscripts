@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         GMAIL Boost
-// @version      2025-09-17
+// @version      2025-09-19
 // @description  some GMAIL stuff i need (auto pop3 refresh on page load, unread mail badge icon support, dark header for pwa, css ui enhancements)
 // @author       Natrim
 // @match        https://mail.google.com/*
