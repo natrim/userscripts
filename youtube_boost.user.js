@@ -136,7 +136,7 @@ if (window.location.hostname === "music.youtube.com") {
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", observer);
         } else {
-            observer
+            observer();
         }
     })();
 
