@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         GMAIL Boost
-// @version      2025-09-19
+// @version      2025-10-09
 // @description  some GMAIL stuff i need (auto pop3 refresh on page load, unread mail badge icon support, dark header for pwa, css ui enhancements)
 // @author       Natrim
 // @match        https://mail.google.com/*
@@ -345,6 +345,10 @@ header.gb_oa.gb_1a.gb_Qe.gb_Mc:not(header.gb_oa.gb_1a.gb_Qe.gb_4.gb_Mc) svg {
 /*header a[aria-label="Gmail"] img {
   content: url(data:image/png;base64,*none*);
 }*/
+/* Or just gray original logo */
+header a[aria-label="Gmail"]{
+    filter: grayscale(1) contrast(2);
+}
 /* Footer */
 .l2.pfiaof.V4 {
   display: none;
