@@ -199,6 +199,12 @@ ytd-watch-flexy[full-bleed-player] #full-bleed-container.ytd-watch-flexy {
 .ytp-pip-button svg {
 padding: 0 !important;
 }
+/* not in FF */
+@-moz-document url-prefix() {
+  .ytp-pip-button {
+    display:none !important;
+  }
+}
 /* new ui smaller controls */
 .html5-video-player.ytp-delhi-modern, .html5-video-player.ytp-delhi-modern > * {
 --yt-delhi-bottom-controls-height: 64px !important;
