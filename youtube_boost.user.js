@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2025-09-19
+// @version      2025-10-09
 // @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, auto-pip, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
@@ -63,80 +63,91 @@
     }
 })();
 
-// only www after this
-if (window.location.hostname !== "www.youtube.com" && window.location.hostname !== "www.youtube-nocookie.com" && window.location.hostname !== "www.youtu.be") {
-    return;
+let css = '';
+if (window.location.hostname === "music.youtube.com") {
+
+    css = `
+.logo.ytmusic-logo {
+    filter: grayscale(1) contrast(2);
 }
+    `;
 
-// force 720p
-(function() {
-    'use strict';
+} else {
 
-    localStorage.setItem('yt-player-quality', '{"data":"{\\"quality\\":720,\\"previousQuality\\":1080}","expiration": ' + (Date.now()+2629746000)+', "creation": '+Date.now()+'}');
-    localStorage.setItem('yt-player-performance-cap', '{"data":"{}","expiration": ' + (Date.now()+2629746000)+', "creation": '+Date.now()+'}');
-    localStorage.setItem('yt-player-performance-cap-active-set', '{"data":"{}","expiration": ' + (Date.now()+2629746000)+', "creation": '+Date.now()+'}');
-
-})();
-
-// AUTO PIP
-(function() {
-    'use strict';
-
-    if (window.pipBoosted) return;
-    window.pipBoosted = true;
-    try {
-        navigator.mediaSession.setActionHandler("enterpictureinpicture", async () => {
-            const video = document.querySelector("video[src]");
-            if (!video) return;
-            await video.requestPictureInPicture();
-        });
-    } catch (error) {
-        console.log("The enterpictureinpicture action is not yet supported.");
-    }
-})();
-
-// Stop shorts looping
-(function() {
-    'use strict';
-
-    const win = this instanceof Window ? this : window;
-    const hkey_script = 'ppodaDtuber';
-    if (win[hkey_script]) return;
-    win[hkey_script] = true;
-
-    const observe = (fn, e = document.body, config = { childList: 1, subtree: 1 }) => {
-        const observer = new MutationObserver(fn);
-        observer.observe(e, config);
-        return () => observer.disconnect();
-    };
-
-    function observer() {
-        let timer = 0;
-        observe(() => {
-            if (timer) clearTimeout(timer);
-            timer = setTimeout(() => {
-                if (location.pathname.startsWith('/shorts/')){
-                    document.querySelectorAll('video').forEach(v => { v.loop = false; })
-                }
-            }, 1);
-        });
+    // only www after this
+    if (window.location.hostname !== "www.youtube.com" && window.location.hostname !== "www.youtube-nocookie.com" && window.location.hostname !== "www.youtu.be") {
+        return;
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", observer);
-    } else {
-        observer
-    }
-})();
+    // force 720p
+    (function() {
+        'use strict';
 
-// WIDE player
-(function() {
-    'use strict';
-    document.cookie = 'wide=1; expires=' + new Date('3099').toUTCString() + '; path=/';
-})();
+        localStorage.setItem('yt-player-quality', '{"data":"{\\"quality\\":720,\\"previousQuality\\":1080}","expiration": ' + (Date.now()+2629746000)+', "creation": '+Date.now()+'}');
+        localStorage.setItem('yt-player-performance-cap', '{"data":"{}","expiration": ' + (Date.now()+2629746000)+', "creation": '+Date.now()+'}');
+        localStorage.setItem('yt-player-performance-cap-active-set', '{"data":"{}","expiration": ' + (Date.now()+2629746000)+', "creation": '+Date.now()+'}');
 
-// STYLES
-const css = `
+    })();
+
+    // AUTO PIP
+    (function() {
+        'use strict';
+
+        if (window.pipBoosted) return;
+        window.pipBoosted = true;
+        try {
+            navigator.mediaSession.setActionHandler("enterpictureinpicture", async () => {
+                const video = document.querySelector("video[src]");
+                if (!video) return;
+                await video.requestPictureInPicture();
+            });
+        } catch (error) {
+            console.log("The enterpictureinpicture action is not yet supported.");
+        }
+    })();
+
+    // Stop shorts looping
+    (function() {
+        'use strict';
+
+        const win = this instanceof Window ? this : window;
+        const hkey_script = 'ppodaDtuber';
+        if (win[hkey_script]) return;
+        win[hkey_script] = true;
+
+        const observe = (fn, e = document.body, config = { childList: 1, subtree: 1 }) => {
+            const observer = new MutationObserver(fn);
+            observer.observe(e, config);
+            return () => observer.disconnect();
+        };
+
+        function observer() {
+            let timer = 0;
+            observe(() => {
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(() => {
+                    if (location.pathname.startsWith('/shorts/')){
+                        document.querySelectorAll('video').forEach(v => { v.loop = false; })
+                    }
+                }, 1);
+            });
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", observer);
+        } else {
+            observer
+        }
+    })();
+
+    // WIDE player
+    (function() {
+        'use strict';
+        document.cookie = 'wide=1; expires=' + new Date('3099').toUTCString() + '; path=/';
+    })();
+
+    // STYLES
+    css = `
 html,
 body {
   height: 100vh;
@@ -225,10 +236,19 @@ height: 56px !important;
 top: unset !important;
 bottom: calc((var(--yt-delhi-big-mode-bottom-controls-height) * 2) + var(--yt-delhi-big-mode-pill-height));
 }
+#logo {
+    filter: grayscale(1) contrast(2);
+}
 `;
+
+}
 
 (function() {
     'use strict';
+
+    if (!css) {
+        return;
+    }
 
     if (typeof GM_addStyle != "undefined") {
         GM_addStyle(css);
