@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Twitch Boost
-// @version      2025-08-19
+// @version      2025-10-09
 // @description  some stuff for Twitch i use (pip button, auto-pip, diable av1, dark pwa title)
 // @author       Natrim
 // @match        *://www.twitch.tv/*
@@ -15,6 +15,10 @@
 // pip button in player
 (function() {
     'use strict';
+
+    if (navigator.userAgent.includes("Firefox")) {
+        return;
+    }
 
     let pipButtonTries = 0;
     let playerReady = setInterval(function () {
