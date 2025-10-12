@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-09-19
+// @version      2025-10-12
 // @description  try to stop all html5 players on page (works most of time)
 // @author       Natrim
 // @match        http://*/*
@@ -26,31 +26,49 @@
         return () => observer.disconnect();
     };
 
-    const stopFrames = () => {
+    const stopFrames = (first = false) => {
         document.querySelectorAll('iframe').forEach(v => { if (v.dataset.autostop) return; v.src = v.src; v.dataset.autostop = true; });
     };
-    const stopVideos = () => {
+    const stopVideos = (first = false) => {
         document.querySelectorAll('video').forEach(v => {
             if (v.dataset.autostop) return;
             if (!v.dataset.autostopclick) {
+                let ftimer = null;
                 const run = () => {
                     v.dataset.autostop = true;
-                    v.dataset.autostopclick = undefined;
+                    v.dataset.autostopclick = false;
+                    if (ftimer) {
+                        clearTimeout(ftimer);
+                        ftimer = null;
+                    }
                     v.removeEventListener("play", run);
                     v.removeEventListener("playing", run);
                     v.removeEventListener("click", run);
                 };
                 v.dataset.autostopclick = true;
-                v.addEventListener("play", run);
-                v.addEventListener("playing", run);
+                // on first run allow play button and keyboard shortcut only after some time
+                if (first) {
+                    ftimer = setTimeout(() => {
+                        v.addEventListener("play", run);
+                        v.addEventListener("playing", run);
+                    }, 3000);
+                } else {
+                    v.addEventListener("play", run);
+                    v.addEventListener("playing", run);
+                }
                 v.addEventListener("click", run);
             }
             v.pause();
         });
     };
 
+    // look at dom changes
     observe(() => {
         stopFrames();
         stopVideos();
     });
+
+    // run on start first
+    stopFrames(true);
+    stopVideos(true);
 })();
