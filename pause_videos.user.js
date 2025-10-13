@@ -5,6 +5,8 @@
 // @author       Natrim
 // @match        http://*/*
 // @match        https://*/*
+// @exclude      https://music.youtube.com/*
+// @exclude      https://open.spotify.com/*
 // @downloadURL  https://github.com/natrim/userscripts/raw/main/pause_videos.user.js
 // @updateURL    https://github.com/natrim/userscripts/raw/main/pause_videos.user.js
 // @grant        none
