@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2025-10-09
+// @version      2025-10-18
 // @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, auto-pip, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
@@ -115,6 +115,83 @@
                     document.querySelectorAll('video').forEach(v => { v.loop = false; })
                 }
             }, 1);
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", observer);
+    } else {
+        observer();
+    }
+})();
+
+// Add stop button to playlists
+(function() {
+    'use strict';
+
+    const win = this instanceof Window ? this : window;
+    const hkey_script = 'pakdPlay';
+    if (win[hkey_script]) return;
+    win[hkey_script] = true;
+
+    function init() {
+        const button = document.createElement('button');
+        button.classList.add('ytp-button');
+        button.style.width = '40px';
+        button.style.height = '100%';
+        const container = document.createElement('div');
+        container.classList.add('ytp-autonav-toggle-button-container');
+        const inner = document.createElement('div');
+        inner.classList.add('ytp-autonav-toggle-button');
+        inner.style.margin = '0 auto';
+        button.appendChild(container).appendChild(inner);
+
+        let state = false;
+        const changeState = (newState) => {
+            state = newState;
+            setTimeout(() => {
+                document.querySelector('yt-playlist-manager')?.set('canAutoAdvance_', state);
+                inner.setAttribute('aria-checked', state.toString());
+            }, 100);
+        };
+        button.addEventListener('click', () => changeState(!state));
+
+        document.addEventListener('yt-page-data-updated', (ev) => {
+            if (ev.detail.pageType !== 'watch' || !location.search.match(/\?(?:.*&)?list=.*/)) {
+                return;
+            }
+            changeState(state);
+            setTimeout(() => {
+                document.querySelector('#playlist-actions #end-actions #flexible-item-buttons')?.replaceChildren(button);
+            }, 1000);
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+})();
+
+// Stop startpage videos autoplay
+(function() {
+    'use strict';
+
+    const win = this instanceof Window ? this : window;
+    const hkey_script = 'HomerTUbed';
+    if (win[hkey_script]) return;
+    win[hkey_script] = true;
+
+    const observe = (fn, e = document.body, config = { childList: 1, subtree: 1 }) => {
+        const observer = new MutationObserver(fn);
+        observer.observe(e, config);
+        return () => observer.disconnect();
+    };
+
+    function observer() {
+        observe(() => {
+            document.querySelector('ytd-video-preview')?.remove();
         });
     }
 
