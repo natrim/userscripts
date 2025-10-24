@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-10-17
-// @description  try to stop all html5 players on page (works most of time) (first 5 seconds you cannot start video with event (button, keyboard), just with Mouse click)
+// @version      2025-10-24
+// @description  try to stop all html5 players on page load (works most of time), can play video only after mouse click (sometimes 2x times) (no play button and spacebar on yt!)
 // @author       Natrim
 // @match        http://*/*
 // @match        https://*/*
@@ -20,74 +20,29 @@
     if (win[hkey_script]) return; // dont run if already loaded
     win[hkey_script] = true;
 
-    const observe = (fn, e = document.body, config = { childList: 1, subtree: 1, attr: 1 }) => {
-        const observer = new MutationObserver(fn);
-        observer.observe(e, config);
-        return () => observer.disconnect();
+    //TODO: save timestamp and clean old sources
+    const stoppedSources = {};
+
+    const stopIframe = (el) => { if (stoppedSources[el.src]) return; el.src = el.src; stoppedSources[el.src] = true; }
+
+    const stopVideo = (el) => {
+        if (stoppedSources[el.src]) return;
+        el.pause();
+        const run = () => {
+            stoppedSources[el.src] = true;
+            el.removeEventListener("click", run);
+        };
+        el.addEventListener("click", run);
     };
 
-    let runningFrameStop = false;
-    let runningFrameStopTimer = null;
-    const stopFrames = () => {
-        if (runningFrameStop) {
-            if (runningFrameStopTimer) {
-                clearTimeout(runningFrameStopTimer);
-            }
-            runningFrameStopTimer = setTimeout(() => {
-                runningFrameStopTimer = null;
-                stopFrames();
-            }, 500);
-            return;
-        }
-        runningFrameStop = true;
-        document.querySelectorAll('iframe').forEach(v => { if (v.dataset.autostop) return; v.src = v.src; v.dataset.autostop = true; });
-        runningFrameStop = false;
+    const stop = () => {
+        document.querySelectorAll('iframe:not([src^="javascript:"])')?.forEach(stopIframe);
+        document.querySelectorAll('video')?.forEach(stopVideo);
     };
 
-    let runningVideoStop = false;
-    let runningVideoStopTimer = null;
-    const stopVideos = () => {
-        if (runningVideoStop) {
-            if (runningVideoStopTimer) {
-                clearTimeout(runningVideoStopTimer);
-            }
-            runningVideoStopTimer = setTimeout(() => {
-                runningVideoStopTimer = null;
-                stopVideos();
-            }, 500);
-            return;
-        }
-        runningVideoStop = true;
-        document.querySelectorAll('video').forEach(v => {
-            if (v.dataset.autostop) return;
-            if (!v.dataset.autostopclick) {
-                let ftimer = null;
-                const run = () => {
-                    v.dataset.autostop = true;
-                    v.dataset.autostopclick = false;
-                    if (ftimer) {
-                        clearTimeout(ftimer);
-                        ftimer = null;
-                    }
-                    v.removeEventListener("play", run);
-                    v.removeEventListener("playing", run);
-                    v.removeEventListener("click", run);
-                };
-                v.dataset.autostopclick = true;
-                ftimer = setTimeout(() => {
-                    v.addEventListener("play", run);
-                    v.addEventListener("playing", run);
-                }, 5000);
-                v.addEventListener("click", run);
-            }
-            v.pause();
-        });
-        runningVideoStop = false;
-    };
+    // now run
+    stop();
 
-    // look at dom changes
-    observe(() => {
-        stopFrames();
-        stopVideos();
-    });
+    // polling cause observing mutations fails sometimes
+    setInterval(stop, 300);
 })();
