@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         GMAIL Boost
-// @version      2025-10-09
+// @version      2025-10-29
 // @description  some GMAIL stuff i need (auto pop3 refresh on page load, unread mail badge icon support, dark header for pwa, css ui enhancements)
 // @author       Natrim
 // @match        https://mail.google.com/*
@@ -50,7 +50,7 @@ function reloadGMAILPOP3() {
 
     window.location.assign('https://mail.google.com/mail/u/' + gmail_acc_number + '/#settings/accounts');
     let loading = true;
-    let limit = 500;
+    let limit = 100;
     let limiter = 0;
     const refreshAccounts = () => {
         const currentNode = document.querySelectorAll("span[role=link]");
