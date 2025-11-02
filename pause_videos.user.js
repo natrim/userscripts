@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-11-02
-// @description  new version prevents all html5 videos to play for 1s (5s for youtube), so you need to click 2x to play it, the delay is to stop autoplay
+// @version      2025-11-03
+// @description  new version prevents all html5 videos to play by itself before first user click
 // @author       Natrim
 // @match        http://*/*
 // @match        https://*/*
@@ -28,22 +28,40 @@
     if (win[hkey_script]) return; // dont run if already loaded
     win[hkey_script] = true;
 
+    const whitelistSource = {};
+    let userLastTouch = 0;
+
+    const touchNow = () => {
+        //console.log("user!");
+        userLastTouch = Date.now();
+    };
+    const isUserTouching = () => {
+        //console.log(Date.now(), userLastTouch, Date.now() - userLastTouch);
+        return userLastTouch && (Date.now() - userLastTouch <= 1000);
+    };
+
+    const observer = () => {
+        document.body.addEventListener('mousedown', touchNow);
+        document.body.addEventListener('touchstart', touchNow);
+        document.body.addEventListener('keydown', touchNow);
+    };
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", observer);
+    } else {
+        observer();
+    }
+
     const allowedToPlayNow = {};
     const elt = document.createElement('video');
     elt.__proto__._play = elt.__proto__.play;
     elt.__proto__.play = async function() {
-        const el = this;
-        if (!allowedToPlayNow[el.src]) {
-            setTimeout(() => {
-                if (el) {
-                    allowedToPlayNow[el.src] = true;
-                }
-            }, win.location.host.indexOf("youtube.com") !== -1 ? 5000 : 1000);
-
+        //console.log("play?");
+        if (!whitelistSource[this.src] && !isUserTouching()) {
             return Promise.reject();
         }
 
-        return el._play();
+        whitelistSource[this.src] = true;
+        return this._play();
     };
 
     document.querySelectorAll('iframe:not([src^="javascript:"])')?.forEach(function(el) {
