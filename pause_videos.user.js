@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-10-26
-// @description  try to stop all html5 players on page load (works most of time), can play video only after mouse click (sometimes 2x times)
+// @version      2025-11-02
+// @description  new version prevents all html5 videos to play for 1s (5s for youtube), so you need to click 2x to play it, the delay is to stop autoplay
 // @author       Natrim
 // @match        http://*/*
 // @match        https://*/*
@@ -28,44 +28,25 @@
     if (win[hkey_script]) return; // dont run if already loaded
     win[hkey_script] = true;
 
-    //TODO: save timestamp and clean old sources
-    const stoppedSources = {};
+    const allowedToPlayNow = {};
+    const elt = document.createElement('video');
+    elt.__proto__._play = elt.__proto__.play;
+    elt.__proto__.play = async function() {
+        const el = this;
+        if (!allowedToPlayNow[el.src]) {
+            setTimeout(() => {
+                if (el) {
+                    allowedToPlayNow[el.src] = true;
+                }
+            }, win.location.host.indexOf("youtube.com") !== -1 ? 5000 : 1000);
 
-    const stopIframe = (el) => { if (stoppedSources[el.src]) return; el.src = el.src; stoppedSources[el.src] = true; }
-
-    const stopVideo = (el) => {
-        if (stoppedSources[el.src]) return;
-        el.pause();
-        const run = () => {
-            stoppedSources[el.src] = true;
-            el.removeEventListener("click", run);
-        };
-        el.addEventListener("click", run);
-    };
-
-    const stop = () => {
-        document.querySelectorAll('iframe:not([src^="javascript:"])')?.forEach(stopIframe);
-        document.querySelectorAll('video')?.forEach(stopVideo);
-    };
-
-    // now run
-    stop();
-
-    // whitelist all videos on this page after spacebar press if time passed
-    const spaceClickHandler = (e) => {
-        if (e && e.keyCode === 32) {
-            document.removeEventListener("keyup", spaceClickHandler);
-            document.querySelectorAll('video')?.forEach((el) => {
-                el.addEventListener("playing", () => {
-                    stoppedSources[el.src] = true;
-                }, { once: true });
-            });
+            return Promise.reject();
         }
-    };
-    setTimeout(() => {
-        document.addEventListener("keyup", spaceClickHandler);
-    }, 1000);
 
-    // polling cause observing mutations fails sometimes
-    setInterval(stop, 300);
+        return el._play();
+    };
+
+    document.querySelectorAll('iframe:not([src^="javascript:"])')?.forEach(function(el) {
+        el.src = el.src;
+    });
 })();
