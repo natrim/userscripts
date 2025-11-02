@@ -30,14 +30,16 @@
 
     const whitelistSource = {};
     let userLastTouch = 0;
+    let userLastLoc = "";
 
     const touchNow = () => {
         //console.log("user!");
         userLastTouch = Date.now();
+        userLastLoc = window.location.href;
     };
     const isUserTouching = () => {
         //console.log(Date.now(), userLastTouch, Date.now() - userLastTouch);
-        return userLastTouch && (Date.now() - userLastTouch <= 1000);
+        return userLastTouch && (Date.now() - userLastTouch <= 1000) && (userLastLoc === window.location.href);
     };
 
     const observer = () => {
