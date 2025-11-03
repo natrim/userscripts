@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         GMAIL Boost
-// @version      2025-10-29
+// @version      2025-11-03
 // @description  some GMAIL stuff i need (auto pop3 refresh on page load, unread mail badge icon support, dark header for pwa, css ui enhancements)
 // @author       Natrim
 // @match        https://mail.google.com/*
@@ -17,6 +17,7 @@ function reloadGMAILPOP3() {
         return;
     }
     const button_text = document.querySelector('html').lang === "cs" ? "Zkontrolovat poštu teď" : "Check mail now";
+    const import_text = document.querySelector('html').lang === "cs" ? "Importovat poštu a kontakty" : "Import mail and contacts"
     let isRefreshAvailable = false;
     const hash = window.top.location.hash;
     switch (hash) {
@@ -50,12 +51,11 @@ function reloadGMAILPOP3() {
 
     window.location.assign('https://mail.google.com/mail/u/' + gmail_acc_number + '/#settings/accounts');
     let loading = true;
-    let limit = 100;
+    let limit = 500;
     let limiter = 0;
     const refreshAccounts = () => {
-        const currentNode = document.querySelectorAll("span[role=link]");
-        if (!Array.prototype.some.call(currentNode, ((a) => {
-            return a.textContent.includes(button_text);
+        if (!Array.prototype.some.call(document.querySelectorAll("span[role=link]"), ((a) => {
+            return a.textContent.includes(button_text) || a.textContent.includes(import_text);
         }))) {
             if (limiter > limit) {
                 console.log("No GMAIL pop3 import found");
@@ -69,7 +69,7 @@ function reloadGMAILPOP3() {
                 loading = false;
                 setTimeout(refreshAccounts, 1000);
             } else {
-                currentNode.forEach((a) => {
+                document.querySelectorAll("span[role=link]").forEach((a) => {
                     if (a.textContent.includes(button_text)) {
                         a.click();
                     }
