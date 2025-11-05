@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-11-03
-// @description  new version prevents all html5 videos to play by itself before first user click
+// @version      2025-11-05
+// @description  new version prevents all html5 videos to play by itself before first user click on page
 // @author       Natrim
 // @match        http://*/*
 // @match        https://*/*
@@ -28,10 +28,12 @@
     if (win[hkey_script]) return; // dont run if already loaded
     win[hkey_script] = true;
 
-    const whitelistSource = {};
-    let userLastTouch = 0;
-    let userLastLoc = "";
+    // variables
+    const whitelistSource = {}; //TODO: some timed clearing to not leak memory maybe? most tabs will probably not live long enough though
+    let userLastTouch = 0; // when user last touched page?
+    let userLastLoc = ""; // on what page did user last touch page?
 
+    // user touching the page check start
     const touchNow = () => {
         //console.log("user!");
         userLastTouch = Date.now();
@@ -52,11 +54,30 @@
     } else {
         observer();
     }
+    // end of checks
 
+    // hard stop first
+    const stoper = () => {
+        document.querySelectorAll('video')?.forEach(function(video) {
+            video.removeAttribute('autoplay');
+            video.pause();
+        });
+        document.querySelectorAll('iframe:not([src^="javascript:"])')?.forEach(function(iframe) {
+            iframe.src = iframe.src;
+        });
+    };
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", stoper);
+    } else {
+        stoper();
+    }
+
+    // override the play method to stop all videos to play before user clicks on page
     const allowedToPlayNow = {};
-    const elt = document.createElement('video');
-    elt.__proto__._play = elt.__proto__.play;
-    elt.__proto__.play = async function() {
+    const vel = document.createElement('video');
+    const vproto = Object.getPrototypeOf(vel);
+    vproto._play = vproto.play;
+    vproto.play = async function() {
         //console.log("play?");
         if (!whitelistSource[this.src] && !isUserTouching()) {
             return Promise.reject();
@@ -65,8 +86,4 @@
         whitelistSource[this.src] = true;
         return this._play();
     };
-
-    document.querySelectorAll('iframe:not([src^="javascript:"])')?.forEach(function(el) {
-        el.src = el.src;
-    });
 })();
