@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-11-05
+// @version      2025-11-06
 // @description  new version prevents all html5 videos to play by itself before first user click on page
 // @author       Natrim
 // @match        http://*/*
@@ -15,7 +15,6 @@
 // @downloadURL  https://github.com/natrim/userscripts/raw/main/pause_videos.user.js
 // @updateURL    https://github.com/natrim/userscripts/raw/main/pause_videos.user.js
 // @grant        none
-// @noframes     true
 // @run-at       document-start
 // ==/UserScript==
 
@@ -23,7 +22,6 @@
     'use strict';
 
     const win = this instanceof Window ? this : window;
-    if (win.top !== win.self) return; // run only on main frame
     const hkey_script = 'fasjVdeionhStop2';
     if (win[hkey_script]) return; // dont run if already loaded
     win[hkey_script] = true;
