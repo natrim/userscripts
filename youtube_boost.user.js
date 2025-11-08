@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2025-10-18
+// @version      2025-11-08
 // @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, auto-pip, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
@@ -80,11 +80,49 @@
 
     if (window.pipBoosted) return;
     window.pipBoosted = true;
+    let isAPipAllowedOnPage = true;
     try {
-        navigator.mediaSession.setActionHandler("enterpictureinpicture", async () => {
-            const video = document.querySelector("video[src]");
-            if (!video) return;
-            await video.requestPictureInPicture();
+        const checkPIPButton = () => {
+            if (document.getElementById("autoPipButtonToggle")) {
+                return;
+            }
+            const parent = document.querySelector(".ytp-right-controls");
+            if (!parent) {
+                return;
+            }
+            try {
+                const text = document.createElement("span");
+                text.style = "display:inline-block;width:100%;height:100%;vertical-align:middle;text-align:center;font-size:20px;margin-top:-32px;"
+                text.innerText = isAPipAllowedOnPage ? "PON" : "POF";
+                const btn = document.createElement("button");
+                btn.className = "ytp-button";
+                btn.id = "autoPipButtonToggle";
+                btn.title = "Toggle Auto PIP ON / OFF";
+                btn.appendChild(text);
+                btn.addEventListener("click", function () {
+                    isAPipAllowedOnPage = !isAPipAllowedOnPage;
+                    text.innerText = isAPipAllowedOnPage ? "PON" : "POF";
+                });
+                parent.appendChild(btn);
+            } catch(e) {
+                console.error(e);
+            }
+        };
+        setInterval(checkPIPButton, 1000);
+        const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2);
+        navigator.mediaSession.setActionHandler("enterpictureinpicture", () => {
+            if (!isAPipAllowedOnPage) return;
+            const BreakException = {};
+            try{
+                document.querySelectorAll("video[src]")?.forEach((video) => {
+                    if (isVideoPlaying(video) && video.requestPictureInPicture) {
+                        video.requestPictureInPicture();
+                        throw BreakException;
+                    }
+                });
+            } catch (e) {
+                if (e !== BreakException) throw e;
+            }
         });
     } catch (error) {
         console.log("The enterpictureinpicture action is not yet supported.");
