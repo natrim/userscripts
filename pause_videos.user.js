@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-11-06
+// @version      2025-11-10
 // @description  new version prevents all html5 videos to play by itself before first user click on page
 // @author       Natrim
 // @match        http://*/*
@@ -77,11 +77,14 @@
     vproto._play = vproto.play;
     vproto.play = async function() {
         //console.log("play?");
-        if (!whitelistSource[this.src] && !isUserTouching()) {
+        if (!this.currentSrc) {
             return Promise.reject();
         }
-
-        whitelistSource[this.src] = true;
+        if (!whitelistSource[this.currentSrc] && !isUserTouching()) {
+            return Promise.reject();
+        }
+        whitelistSource[this.currentSrc] = true;
+        //console.log("whitelisted", this.currentSrc);
         return this._play();
     };
 })();
