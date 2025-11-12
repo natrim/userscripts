@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Twitch Boost
-// @version      2025-10-09
+// @version      2025-11-11
 // @description  some stuff for Twitch i use (pip button, auto-pip, diable av1, dark pwa title)
 // @author       Natrim
 // @match        *://www.twitch.tv/*
@@ -55,7 +55,7 @@
                 )[1].lastElementChild
             );
             btn2.addEventListener("click", function () {
-                document.querySelector(".video-ref video[src]").requestPictureInPicture();
+                document.querySelector(".video-ref video")?.requestPictureInPicture();
             });
         }
     }, 1000);
@@ -107,27 +107,4 @@
 
     overrideCanPlayType();
     overrideIsTypeSuppoerted();
-})();
-
-
-// only www after this
-if (window.location.hostname !== "www.twitch.tv") {
-    return;
-}
-
-// AUTO PIP
-(function() {
-    'use strict';
-
-    if (window.pipBoosted) return;
-    window.pipBoosted = true;
-    try {
-        navigator.mediaSession.setActionHandler("enterpictureinpicture", async () => {
-            const video = document.querySelector("video[src]");
-            if (!video) return;
-            await video.requestPictureInPicture();
-        });
-    } catch (error) {
-        console.log("The enterpictureinpicture action is not yet supported.");
-    }
 })();
