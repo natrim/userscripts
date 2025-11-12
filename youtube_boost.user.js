@@ -133,8 +133,8 @@
             if (!isAPipAllowedOnPage) return;
             const BreakException = {};
             try{
-                document.querySelectorAll("video[src]")?.forEach((video) => {
-                    if (isVideoPlaying(video) && video.requestPictureInPicture) {
+                document.querySelectorAll("video")?.forEach((video) => {
+                    if (!!video.currentSrc && isVideoPlaying(video) && video.requestPictureInPicture) {
                         video.requestPictureInPicture();
                         throw BreakException;
                     }
