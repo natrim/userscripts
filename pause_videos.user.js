@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-11-10
+// @version      2025-11-11
 // @description  new version prevents all html5 videos to play by itself before first user click on page
 // @author       Natrim
 // @match        http://*/*
@@ -12,6 +12,7 @@
 // @exclude      brave://*/*
 // @exclude      edge://*/*
 // @exclude      opera://*/*
+// @exclude      *://www.twitch.tv/*
 // @downloadURL  https://github.com/natrim/userscripts/raw/main/pause_videos.user.js
 // @updateURL    https://github.com/natrim/userscripts/raw/main/pause_videos.user.js
 // @grant        none
