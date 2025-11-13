@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-11-11
+// @version      2025-11-12
 // @description  new version prevents all html5 videos to play by itself before first user click on page
 // @author       Natrim
 // @match        http://*/*
@@ -12,7 +12,6 @@
 // @exclude      brave://*/*
 // @exclude      edge://*/*
 // @exclude      opera://*/*
-// @exclude      *://www.twitch.tv/*
 // @downloadURL  https://github.com/natrim/userscripts/raw/main/pause_videos.user.js
 // @updateURL    https://github.com/natrim/userscripts/raw/main/pause_videos.user.js
 // @grant        none
@@ -28,7 +27,7 @@
     win[hkey_script] = true;
 
     // variables
-    const whitelistSource = {}; //TODO: some timed clearing to not leak memory maybe? most tabs will probably not live long enough though
+    let whitelistSource = {}; // keep clicked videos already playing
     let userLastTouch = 0; // when user last touched page?
     let userLastLoc = ""; // on what page did user last touch page?
 
@@ -64,6 +63,9 @@
         document.querySelectorAll('iframe:not([src^="javascript:"])')?.forEach(function(iframe) {
             iframe.src = iframe.src;
         });
+        win?.navigation?.addEventListener('navigate', () => {
+            whitelistSource = {};
+        });
     };
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", stoper);
@@ -78,14 +80,15 @@
     vproto._play = vproto.play;
     vproto.play = async function() {
         //console.log("play?");
-        if (!this.currentSrc) {
+        let key = this.currentSrc || this.src || `${win.location.pathname}#${this.id}` || false;
+        if (!key) {
             return Promise.reject();
         }
-        if (!whitelistSource[this.currentSrc] && !isUserTouching()) {
+        if (!whitelistSource[key] && !isUserTouching()) {
             return Promise.reject();
         }
-        whitelistSource[this.currentSrc] = true;
-        //console.log("whitelisted", this.currentSrc);
+        whitelistSource[key] = true;
+        //console.log("whitelisted", key);
         return this._play();
     };
 })();
