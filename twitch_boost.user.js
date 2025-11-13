@@ -38,6 +38,12 @@
                 '<div aria-describedby="241f74d967eb4cf412d5ddd29ff2a456" class="Layout-sc-nxg1ff-0 ScAttachedTooltipWrapper-sc-v8mg6d-0 hOVSHb"><div class="ScAttachedTooltip-sc-v8mg6d-1 kqEiJv tw-tooltip" data-a-target="tw-tooltip-label" role="tooltip" id="241f74d967eb4cf412d5ddd29ff2a456" direction="top">📺PIP</div></div>';
             var btn2 = document.createElement("button");
             btn2.innerHTML = btn.innerHTML;
+            btn2.addEventListener("click", function () {
+                document.querySelector(".video-ref video")?.requestPictureInPicture();
+            });
+            btn.addEventListener("click", function () {
+                document.querySelector(".video-ref video")?.requestPictureInPicture();
+            });
             document
                 .getElementsByClassName("player-controls__right-control-group")[0]
                 .insertBefore(
@@ -54,9 +60,6 @@
                     "player-controls__right-control-group"
                 )[1].lastElementChild
             );
-            btn2.addEventListener("click", function () {
-                document.querySelector(".video-ref video")?.requestPictureInPicture();
-            });
         }
     }, 1000);
 })();
