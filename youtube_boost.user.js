@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2025-11-11
+// @version      2025-11-12
 // @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, auto-pip, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
@@ -97,23 +97,20 @@
                 btn.title = "Toggle Auto PIP ON / OFF";
                 //btn.appendChild(text);
                 var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-                //svg.setAttribute("viewBox", "0 0 24 24");
+                svg.setAttribute("viewBox", "0 0 36 36");
                 //svg.setAttribute("fill", "none");
                 svg.setAttribute("fill", isAPipAllowedOnPage ? "green" : "red");
-                svg.setAttribute("width", "24");
-                svg.setAttribute("height", "24");
+                svg.setAttribute("width", "100%");
+                svg.setAttribute("height", "100%");
+                svg.setAttribute("style", "padding:0");
 
                 var newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-                newElement.setAttribute("d", "M2.00077 11C2 11.3178 2 11.6508 2 12C2 15.7497 2 17.6246 2.95491 18.9389C3.26331 19.3634 3.6366 19.7367 4.06107 20.0451C5.3754 21 7.25027 21 11 21H13C16.7497 21 18.6246 21 19.9389 20.0451C20.3634 19.7367 20.7367 19.3634 21.0451 18.9389C22 17.6246 22 15.7497 22 12C22 8.25027 22 6.3754 21.0451 5.06107C20.7367 4.6366 20.3634 4.26331 19.9389 3.95491C18.6246 3 16.7497 3 13 3H11C7.25027 3 5.3754 3 4.06107 3.95491C3.6366 4.26331 3.26331 4.6366 2.95491 5.06107C2.57157 5.5887 2.34212 6.20667 2.20478 7");
-                newElement.setAttribute("stroke", "#fff");
-                newElement.setAttribute("stroke-width", "2");
-                newElement.setAttribute("stroke-linecap", "round");
+                newElement.setAttribute("d", "M25,17 L17,17 L17,23 L25,23 L25,17 L25,17 Z M29,25 L29,10.98 C29,9.88 28.1,9 27,9 L9,9 C7.9,9 7,9.88 7,10.98 L7,25 C7,26.1 7.9,27 9,27 L27,27 C28.1,27 29,26.1 29,25 L29,25 Z M27,25.02 L9,25.02 L9,10.97 L27,10.97 L27,25.02 L27,25.02 Z");
                 svg.appendChild(newElement);
 
                 newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-                newElement.setAttribute("d", "M11 14C11 13.0681 11 12.6022 11.1522 12.2346C11.3552 11.7446 11.7446 11.3552 12.2346 11.1522C12.6022 11 13.0681 11 14 11H15C15.9319 11 16.3978 11 16.7654 11.1522C17.2554 11.3552 17.6448 11.7446 17.8478 12.2346C18 12.6022 18 13.0681 18 14C18 14.9319 18 15.3978 17.8478 15.7654C17.6448 16.2554 17.2554 16.6448 16.7654 16.8478C16.3978 17 15.9319 17 15 17H14C13.0681 17 12.6022 17 12.2346 16.8478C11.7446 16.6448 11.3552 16.2554 11.1522 15.7654C11 15.3978 11 14.9319 11 14Z");
-                newElement.setAttribute("stroke", "#fff");
-                newElement.setAttribute("stroke-width", "2");
+                newElement.setAttribute("d", "M25,17 L17,17 L17,23 L25,23 L25,17 L25,17 Z M27,25.02 L9,25.02 L9,10.97 L27,10.97 L27,25.02 L27,25.02 Z");
+                newElement.setAttribute("fill", "#fff");
                 svg.appendChild(newElement);
 
 
