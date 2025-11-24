@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2025-11-12
+// @version      2025-11-24
 // @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, auto-pip, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
@@ -80,6 +80,12 @@
 
     if (window.pipBoosted) return;
     window.pipBoosted = true;
+
+    // doesnt work on ff so bail
+    if (typeof document.createElement("video").requestPictureInPicture !== "function") {
+        return;
+    }
+
     let isAPipAllowedOnPage = true;
     try {
         const checkPIPButton = () => {
