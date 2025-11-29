@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2025-11-24
+// @version      2025-11-29
 // @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, auto-pip, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
@@ -14,6 +14,7 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
+// AUTO PIP - now lives in its own user script, so it can work on other sites
 
 // Disable av1
 (function disableAV1() {
@@ -31,7 +32,8 @@
         // Override video element canPlayType() function
         var videoElem = document.createElement('video');
         var origCanPlayType = videoElem.canPlayType.bind(videoElem);
-        videoElem.__proto__.canPlayType = makeModifiedTypeChecker(origCanPlayType);
+        var _proto = Object.getPrototypeOf(videoElem);
+        _proto.canPlayType = makeModifiedTypeChecker(origCanPlayType);
     }
 
     function overrideIsTypeSuppoerted() {
@@ -72,83 +74,6 @@
     localStorage.setItem('yt-player-performance-cap', '{"data":"{}","expiration": ' + (Date.now()+2629746000)+', "creation": '+Date.now()+'}');
     localStorage.setItem('yt-player-performance-cap-active-set', '{"data":"{}","expiration": ' + (Date.now()+2629746000)+', "creation": '+Date.now()+'}');
 
-})();
-
-// AUTO PIP
-(function() {
-    'use strict';
-
-    if (window.pipBoosted) return;
-    window.pipBoosted = true;
-
-    // doesnt work on ff so bail
-    if (typeof document.createElement("video").requestPictureInPicture !== "function") {
-        return;
-    }
-
-    let isAPipAllowedOnPage = true;
-    try {
-        const checkPIPButton = () => {
-            if (document.getElementById("autoPipButtonToggle")) {
-                return;
-            }
-            const parent = document.querySelector(".ytp-right-controls");
-            if (!parent) {
-                return;
-            }
-            try {
-                const btn = document.createElement("button");
-                btn.className = "ytp-button";
-                btn.id = "autoPipButtonToggle";
-                btn.title = "Toggle Auto PIP ON / OFF";
-                //btn.appendChild(text);
-                var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-                svg.setAttribute("viewBox", "0 0 36 36");
-                //svg.setAttribute("fill", "none");
-                svg.setAttribute("fill", isAPipAllowedOnPage ? "green" : "red");
-                svg.setAttribute("width", "100%");
-                svg.setAttribute("height", "100%");
-                svg.setAttribute("style", "padding:0");
-
-                var newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-                newElement.setAttribute("d", "M25,17 L17,17 L17,23 L25,23 L25,17 L25,17 Z M29,25 L29,10.98 C29,9.88 28.1,9 27,9 L9,9 C7.9,9 7,9.88 7,10.98 L7,25 C7,26.1 7.9,27 9,27 L27,27 C28.1,27 29,26.1 29,25 L29,25 Z M27,25.02 L9,25.02 L9,10.97 L27,10.97 L27,25.02 L27,25.02 Z");
-                svg.appendChild(newElement);
-
-                newElement = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-                newElement.setAttribute("d", "M25,17 L17,17 L17,23 L25,23 L25,17 L25,17 Z M27,25.02 L9,25.02 L9,10.97 L27,10.97 L27,25.02 L27,25.02 Z");
-                newElement.setAttribute("fill", "#fff");
-                svg.appendChild(newElement);
-
-
-                btn.appendChild(svg);
-                btn.addEventListener("click", function () {
-                    isAPipAllowedOnPage = !isAPipAllowedOnPage;
-                    svg.setAttribute("fill", isAPipAllowedOnPage ? "green" : "red");
-                });
-                parent.appendChild(btn);
-            } catch(e) {
-                console.error(e);
-            }
-        };
-        setInterval(checkPIPButton, 1000);
-        const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2);
-        navigator.mediaSession.setActionHandler("enterpictureinpicture", () => {
-            if (!isAPipAllowedOnPage) return;
-            const BreakException = {};
-            try{
-                document.querySelectorAll("video")?.forEach((video) => {
-                    if (!!video.currentSrc && isVideoPlaying(video) && video.requestPictureInPicture) {
-                        video.requestPictureInPicture();
-                        throw BreakException;
-                    }
-                });
-            } catch (e) {
-                if (e !== BreakException) throw e;
-            }
-        });
-    } catch (error) {
-        console.log("The enterpictureinpicture action is not yet supported.");
-    }
 })();
 
 // Stop shorts looping
