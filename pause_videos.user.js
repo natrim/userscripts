@@ -37,6 +37,7 @@
         userLastTouch = Date.now();
         userLastLoc = window.location.href;
     };
+    // helper to check if user touched document in last x seconds
     const isUserTouching = () => {
         //console.log(Date.now(), userLastTouch, Date.now() - userLastTouch);
         return userLastTouch && (Date.now() - userLastTouch <= 1000) && (userLastLoc === window.location.href);
@@ -73,22 +74,30 @@
         stoper();
     }
 
+    // helper to check iv video is currently playing
+    const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2);
+
     // override the play method to stop all videos to play before user clicks on page
     const allowedToPlayNow = {};
     const vel = document.createElement('video');
     const vproto = Object.getPrototypeOf(vel);
     vproto._play = vproto.play;
     vproto.play = async function() {
-        //console.log("play?");
+        // if video is in playing state then allow once (no whitelist)
+        if (isVideoPlaying(this)) {
+            return this._play();
+        }
+        // get some identifer of this video
         let key = this.currentSrc || this.src || `${win.location.pathname}#${this.id}` || false;
         if (!key) {
             return Promise.reject();
         }
+        // reject play if not whitelisted or the document not touched
         if (!whitelistSource[key] && !isUserTouching()) {
             return Promise.reject();
         }
+        // whitelist and play
         whitelistSource[key] = true;
-        //console.log("whitelisted", key);
         return this._play();
     };
 })();
