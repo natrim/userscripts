@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2025-11-29
+// @version      2025-12-20
 // @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, auto-pip, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
@@ -221,19 +221,10 @@ ytd-masthead .yt-spec-button-shape-next--size-m,
 yt-searchbox {
   height: 100% !important;
 }
-/* hide useless content */
+/* hide some useless content */
 /*#logo,*/
 #footer,
-#voice-search-button,
-/* left panel browse and more youtube plans */
-#sections>ytd-guide-section-renderer:nth-child(3),
-#sections>ytd-guide-section-renderer:nth-child(4)
-/* shorts */
-/*,
-  #contents > ytd-rich-section-renderer:nth-child(3),
-  #contents ytd-reel-shelf-renderer
-  */
-  {
+#voice-search-button, {
   display: none !important
 }
 /* pinker progress bar */
