@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Pause videos on page load
-// @version      2025-11-29
+// @version      2026-04-22
 // @description  new version prevents all html5 videos to play by itself before first user click on page
 // @author       Natrim
 // @match        http://*/*
@@ -76,6 +76,11 @@
 
     // helper to check iv video is currently playing
     const isVideoPlaying = video => !!(video.currentTime > 0 && !video.paused && !video.ended && video.readyState > 2);
+    // helper to get youtube video id
+    const getVideoId = (url) => {
+        let regex = /(youtu.*be.*)\/(watch\?v=|embed\/|v|shorts|)(.*?((?=[&#?])|$))/gm;
+        return regex.exec(url)[3];
+    };
 
     // override the play method to stop all videos to play before user clicks on page
     const allowedToPlayNow = {};
@@ -89,6 +94,13 @@
         }
         // get some identifer of this video
         let key = this.currentSrc || this.src || `${win.location.pathname}#${this.id}` || false;
+        // youtube key override to video id
+        if (window.location.hostname.indexOf("youtube.com") !== -1) {
+            const v = getVideoId(window.location.href);
+            if (v) {
+                key = v;
+            }
+        }
         if (!key) {
             return Promise.reject();
         }
