@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2025-12-20
+// @version      2026-05-20
 // @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, auto-pip, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
@@ -200,7 +200,7 @@ body {
   height: 100vh;
 }
 /* make header smaller */
-html, ytd-app {
+ytd-app:not([fullscreen]) {
   --ytd-masthead-height: 48px !important;
 }
 #masthead-container.ytd-app,
@@ -242,7 +242,7 @@ ytd-thumbnail:has(ytd-thumbnail-overlay-resume-playback-renderer) {
   filter: brightness(0.2) grayscale(1);
 }
 /* bigger video player */
-ytd-watch-flexy[full-bleed-player] #full-bleed-container.ytd-watch-flexy {
+ytd-app:not([fullscreen]) ytd-watch-flexy[full-bleed-player] #full-bleed-container.ytd-watch-flexy {
   max-height: calc(100vh - 129px) !important;
 }
 /* always show pip button */
