@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2026-05-20
-// @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, auto-pip, stop shorts looping, wide video by default, css ui changes)
+// @version      2026-06-02
+// @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
 // @match        https://www.youtube-nocookie.com/*
@@ -238,8 +238,8 @@ yt-searchbox {
   background-color: #e5227d !important;
 }
 /* grayup watched videos thumbnails */
-ytd-thumbnail:has(ytd-thumbnail-overlay-resume-playback-renderer) {
-  filter: brightness(0.2) grayscale(1);
+ytd-thumbnail:has(ytd-thumbnail-overlay-resume-playback-renderer), yt-thumbnail-view-model:has(.ytThumbnailOverlayProgressBarHostWatchedProgressBar) {
+  filter: brightness(0.3) grayscale(1);
 }
 /* bigger video player */
 ytd-app:not([fullscreen]) ytd-watch-flexy[full-bleed-player] #full-bleed-container.ytd-watch-flexy {
