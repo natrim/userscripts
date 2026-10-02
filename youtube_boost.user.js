@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2026-06-02
+// @version      2026-10-02
 // @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, stop shorts looping, wide video by default, css ui changes)
 // @author       Natrim
 // @match        https://www.youtube.com/*
