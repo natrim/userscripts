@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube Boost
-// @version      2026-10-02
-// @description  some stuff for Youtube i use (disable av1, pwa dark title, force 720p videos, stop shorts looping, wide video by default, css ui changes)
+// @version      2026-11-19
+// @description  some stuff for Youtube i use
 // @author       Natrim
 // @match        https://www.youtube.com/*
 // @match        https://www.youtube-nocookie.com/*
@@ -156,34 +156,6 @@
         document.addEventListener("DOMContentLoaded", init);
     } else {
         init();
-    }
-})();
-
-// Stop startpage videos autoplay
-(function() {
-    'use strict';
-
-    const win = this instanceof Window ? this : window;
-    const hkey_script = 'HomerTUbed';
-    if (win[hkey_script]) return;
-    win[hkey_script] = true;
-
-    const observe = (fn, e = document.body, config = { childList: 1, subtree: 1 }) => {
-        const observer = new MutationObserver(fn);
-        observer.observe(e, config);
-        return () => observer.disconnect();
-    };
-
-    function observer() {
-        observe(() => {
-            document.querySelector('ytd-video-preview')?.remove();
-        });
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", observer);
-    } else {
-        observer();
     }
 })();
 
