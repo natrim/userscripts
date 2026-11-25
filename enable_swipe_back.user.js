@@ -13,6 +13,9 @@
 (function () {
     'use strict';
 
+    if (window.sweepGesturingEnabled) return;
+    window.sweepGesturingEnabled = true;
+
     const css = `
         *, *::before, *::after {
             overscroll-behavior-x: auto !important;
