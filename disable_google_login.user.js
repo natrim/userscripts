@@ -12,6 +12,9 @@
 
 (function() {
 
+    if (window.googleLoginGoner) return;
+    window.googleLoginGoner = true;
+
     'use strict';
     const BLOCKED_SCRIPT_URLS = [
         'accounts.google.com/gsi/client',
